@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect, useRef, useState } from "react";
+import { useEffect, useRef, useState, memo, useCallback } from \"react\";
 import { useSignRecognition } from "@/hooks/useSignRecognition";
 import { useSignRecognitionDebug } from "@/hooks/useSignRecognitionDebug";
 import { getRecognitionRuntime, type RecognitionResult } from "@/lib/recognition-service";
@@ -130,13 +130,25 @@ export function SignRecognitionPanel({ language, onRecognitionResult, onStatusCh
   const runtime = getRecognitionRuntime();
 
   return (
-    <div className="w-full space-y-6 rounded-[2rem] border border-emerald-100 bg-white/90 p-6 shadow-sm dark:border-emerald-900/40 dark:bg-slate-900/80">
+    <div className="w-full space-y-6 rounded-[2rem] border border-teal-100 bg-white/90 p-6 shadow-sm dark:border-teal-900/40 dark:bg-slate-900/80">
       <div>
-        <h3 className="mb-2 text-xl font-black text-slate-950 dark:text-white">Recognition Workspace</h3>
+        <h3 className="mb-2 text-xl font-black text-slate-950 dark:text-white">📹 Live Camera Recognition</h3>
         <p className="text-sm text-slate-600 dark:text-slate-400">
-          Camera-backed sign recognition with a swappable backend. Demo fallback stays available when the API is not ready.
+          This mode recognizes signs from your camera in real-time. Make a sign after starting the camera.
         </p>
       </div>
+
+      {/* Step-by-step instructions */}
+      {!cameraActive && (
+        <div className="rounded-xl bg-teal-50 px-4 py-3 dark:bg-teal-500/10">
+          <p className="text-sm font-bold text-teal-900 dark:text-teal-200">👉 How to use:</p>
+          <ol className="mt-2 space-y-1 text-sm text-teal-800 dark:text-teal-300">
+            <li>1. Click <strong>"Start Camera"</strong> to enable your webcam</li>
+            <li>2. Click <strong>"Start Recognition"</strong> to begin detecting signs</li>
+            <li>3. Make a sign in front of the camera</li>
+          </ol>
+        </div>
+      )}
 
       <div className="flex items-center gap-3">
         <div
@@ -151,10 +163,10 @@ export function SignRecognitionPanel({ language, onRecognitionResult, onStatusCh
           }`}
         />
         <span className="text-sm font-medium text-slate-700 dark:text-slate-200">
-          {currentStatus === "recognizing" && "Recognizing..."}
-          {currentStatus === "initializing" && "Initializing backend..."}
-          {currentStatus === "error" && "Recognition error"}
-          {currentStatus === "idle" && "Ready"}
+          {currentStatus === "recognizing" && "✓ Recognizing..."}
+          {currentStatus === "initializing" && "⏳ Initializing backend..."}
+          {currentStatus === "error" && "❌ Recognition error"}
+          {currentStatus === "idle" && "✓ Ready"}
         </span>
       </div>
 
@@ -165,7 +177,7 @@ export function SignRecognitionPanel({ language, onRecognitionResult, onStatusCh
           <div className="grid h-full place-items-center p-6 text-center text-white/60">
             <div>
               <p className="text-2xl">📹</p>
-              <p className="mt-2 text-sm">Camera inactive</p>
+              <p className="mt-2 text-sm">Camera inactive - click below to start</p>
             </div>
           </div>
         )}
@@ -231,14 +243,41 @@ export function SignRecognitionPanel({ language, onRecognitionResult, onStatusCh
         </button>
       </div>
 
-      <div className="rounded-3xl border border-teal-100 bg-teal-50/70 p-4 text-xs leading-6 text-slate-600 dark:border-teal-500/20 dark:bg-teal-500/10 dark:text-slate-400">
-        <p>
-          <strong>Status:</strong> {runtime.provider === "demo" ? runtime.fallbackReason || "Demo fallback active." : "Backend connected."}
-        </p>
-        <p className="mt-1">
-          Frames are sent to the backend API and buffered into a temporal sequence before a prediction is returned.
-        </p>
+      <div className={`rounded-3xl border p-4 text-xs leading-6 ${
+        runtime.provider === "demo" 
+          ? "border-amber-200 bg-amber-50/70 dark:border-amber-500/30 dark:bg-amber-500/10"
+          : "border-green-200 bg-green-50/70 dark:border-green-500/30 dark:bg-green-500/10"
+      }`}>
+        {runtime.provider === "demo" ? (
+          <>
+            <p className="font-bold text-amber-900 dark:text-amber-200">⚠️ Demo Fallback Active</p>
+            <p className="mt-1 text-amber-800 dark:text-amber-300">
+              {runtime.fallbackReason || "Backend unavailable. Using demo predictions. Connect a backend to enable real camera recognition."}
+            </p>
+          </>
+        ) : (
+          <>
+            <p className="font-bold text-green-900 dark:text-green-200">✓ Backend Connected</p>
+            <p className="mt-1 text-green-800 dark:text-green-300">Real-time camera recognition is active.</p>
+          </>
+        )}
       </div>
+
+      {/* Debug Diagnostics Panel */}
+      {debug && metricsCollector && (
+        <RecognitionDiagnostics
+          collector={metricsCollector}
+          prediction={results.length > 0 ? results[0]?.text : null}
+          confidence={confidence}
+          latencyMs={latencyMs}
+          modelName={modelName}
+          apiVersion={apiVersion}
+          fps={fps}
+          requestInFlight={requestInFlight}
+          droppedFrames={droppedFrames}
+          sequenceLength={sequenceLength}
+        />
+      )}
     </div>
   );
 }

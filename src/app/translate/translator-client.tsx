@@ -22,6 +22,7 @@ export default function TranslatorClient() {
   const searchParams = useSearchParams();
   const initialLanguage = (searchParams.get("language") as SignLanguageKey | null) || "asl";
   const language = languageMap[initialLanguage] || languageMap.asl;
+  const debugMode = searchParams.get("debug") === "1";
   const [selectedLanguage, setSelectedLanguage] = useState<SignLanguageKey>(language.key);
   const [mode, setMode] = useState<SignMode>("word");
   const [recognitionMode, setRecognitionMode] = useState<"demo" | "ai">("demo");
@@ -140,27 +141,32 @@ export default function TranslatorClient() {
         </div>
 
         {/* Mode Selector */}
-        <div className="mb-8 flex gap-3 sb-reveal">
-          <button
-            onClick={() => setRecognitionMode("demo")}
-            className={`px-4 py-2 rounded-full font-bold transition-all ${
-              recognitionMode === "demo"
-                ? "bg-teal-700 text-white"
-                : "border border-emerald-200 text-slate-700 hover:bg-emerald-50 dark:border-emerald-800 dark:text-slate-200 dark:hover:bg-slate-800"
-            }`}
-          >
-            Demo Mode
-          </button>
-          <button
-            onClick={() => setRecognitionMode("ai")}
-            className={`px-4 py-2 rounded-full font-bold transition-all ${
-              recognitionMode === "ai"
-                ? "bg-teal-700 text-white"
-                : "border border-emerald-200 text-slate-700 hover:bg-emerald-50 dark:border-emerald-800 dark:text-slate-200 dark:hover:bg-slate-800"
-            }`}
-          >
-            AI Recognition (AI4Bharat)
-          </button>
+        <div className="mb-8 sb-reveal">
+          <p className="mb-3 text-sm font-black uppercase tracking-[0.2em] text-slate-600 dark:text-slate-300">Choose recognition mode</p>
+          <div className="flex gap-3">
+            <button
+              onClick={() => setRecognitionMode("demo")}
+              className={`flex-1 px-4 py-3 rounded-2xl font-bold transition-all ${
+                recognitionMode === "demo"
+                  ? "bg-amber-600 text-white shadow-lg"
+                  : "border border-amber-200 text-slate-700 hover:bg-amber-50 dark:border-amber-800 dark:text-slate-200 dark:hover:bg-slate-800"
+              }`}
+            >
+              <div className="text-sm">🎬 Demo Mode</div>
+              <div className="text-xs font-normal opacity-90">Auto-cycles predictions</div>
+            </button>
+            <button
+              onClick={() => setRecognitionMode("ai")}
+              className={`flex-1 px-4 py-3 rounded-2xl font-bold transition-all ${
+                recognitionMode === "ai"
+                  ? "bg-teal-700 text-white shadow-lg"
+                  : "border border-teal-200 text-slate-700 hover:bg-teal-50 dark:border-teal-800 dark:text-slate-200 dark:hover:bg-slate-800"
+              }`}
+            >
+              <div className="text-sm">📹 Real Recognition</div>
+              <div className="text-xs font-normal opacity-90">Live camera detection</div>
+            </button>
+          </div>
         </div>
 
         {/* AI Recognition Mode */}
@@ -168,6 +174,7 @@ export default function TranslatorClient() {
           <div className="sb-reveal sb-hover-lift" style={{ animationDelay: "80ms" }}>
             <SignRecognitionPanel
               language={selectedLanguage}
+              debug={debugMode}
               onRecognitionResult={(text, confidence) => {
                 const newPrediction: OutputPrediction = {
                   label: text,
@@ -189,7 +196,11 @@ export default function TranslatorClient() {
         ) : (
           /* Demo Mode */
           <div className="grid gap-6 lg:grid-cols-[0.95fr_1.05fr]">
-          <section className="sb-reveal sb-hover-lift rounded-[2rem] border border-emerald-100 bg-white/90 p-4 shadow-sm dark:border-emerald-900/40 dark:bg-slate-900/80" style={{ animationDelay: "80ms" }}>
+          <section className="sb-reveal sb-hover-lift rounded-[2rem] border border-amber-100 bg-white/90 p-4 shadow-sm dark:border-amber-900/40 dark:bg-slate-900/80" style={{ animationDelay: "80ms" }}>
+            <div className="mb-3 rounded-lg bg-amber-50 px-3 py-2 dark:bg-amber-500/10">
+              <p className="text-xs font-bold uppercase tracking-wider text-amber-800 dark:text-amber-300">ℹ️ This is prototype mode</p>
+              <p className="text-xs text-amber-700 dark:text-amber-200">Predictions cycle automatically. Use "Real Recognition" mode to test with your camera.</p>
+            </div>
             <div className="aspect-video overflow-hidden rounded-[1.5rem] bg-slate-950">
               <video ref={videoRef} className="h-full w-full object-cover" autoPlay playsInline muted />
               {!running && (

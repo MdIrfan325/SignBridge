@@ -12,6 +12,8 @@ export interface RecognitionResult {
   sequenceLength: number;
   latencyMs?: number;
   model?: string;
+  captureMs?: number;
+  httpMs?: number;
 }
 
 export interface RecognitionConfig {
@@ -141,6 +143,8 @@ function createDemoProvider(): RecognitionProvider {
         sequenceLength: config.sequenceLength,
         latencyMs: 0,
         model: "demo",
+        captureMs: 0,
+        httpMs: 0,
       };
     },
   };
@@ -194,6 +198,7 @@ function createOpenHandsProvider(): RecognitionProvider {
     },
     async recognizeFrame(frame, config, signal) {
       try {
+        const httpStart = performance.now();
         const response = await fetch(`${config.backendUrl}/api/v1/recognize`, {
           method: "POST",
           headers: {
@@ -219,6 +224,9 @@ function createOpenHandsProvider(): RecognitionProvider {
         }
 
         const payload = (await response.json()) as RecognitionApiResponse;
+        const httpEnd = performance.now();
+        const httpMs = httpEnd - httpStart;
+
         if (!payload.prediction || payload.status !== "predicted") {
           return null;
         }
@@ -233,6 +241,7 @@ function createOpenHandsProvider(): RecognitionProvider {
           sequenceLength: payload.sequence_length,
           latencyMs: payload.latency_ms ?? undefined,
           model: payload.model ?? "openhands-lstm",
+          httpMs,
         };
       } catch (error) {
         updateRuntime({
@@ -328,11 +337,20 @@ export async function* recognizeStream(
     const now = Date.now();
 
     if (now - lastFrameTime >= frameDuration) {
+      const captureStart = performance.now();
       const frame = preprocessFrame(videoElement, config.preprocessingLevel);
+      const captureEnd = performance.now();
+      const captureMs = captureEnd - captureStart;
+
       const result = await recognizeFrame(frame, config, signal);
 
       if (result && result.confidence >= config.minConfidence) {
-        yield result;
+        // Attach capture timing to the result
+        const resultWithTiming: RecognitionResult = {
+          ...result,
+          captureMs,
+        };
+        yield resultWithTiming;
       }
 
       lastFrameTime = now;

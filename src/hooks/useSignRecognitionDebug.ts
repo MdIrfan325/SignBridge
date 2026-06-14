@@ -164,10 +164,10 @@ export function useSignRecognitionDebug(options: UseSignRecognitionDebugOptions 
           if (debug && metricsRef.current) {
             metricsRef.current.record({
               timestamp: now,
-              capture_ms: 0,
-              http_ms: result.latencyMs || 0,
+              capture_ms: result.captureMs || 0,
+              http_ms: result.httpMs || 0,
               backend_latency_ms: result.latencyMs || null,
-              total_latency_ms: result.latencyMs || 0,
+              total_latency_ms: (result.captureMs || 0) + (result.httpMs || 0),
               prediction: result.text,
               confidence: result.confidence,
               request_bytes: 0,
