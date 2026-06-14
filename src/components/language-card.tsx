@@ -3,7 +3,7 @@ import type { SignLanguage } from "@/lib/sign-data";
 
 export function LanguageCard({ language }: { language: SignLanguage }) {
   return (
-    <div className="group rounded-3xl border border-slate-200 bg-white p-6 shadow-sm transition hover:-translate-y-1 hover:shadow-xl dark:border-slate-800 dark:bg-slate-900">
+    <div className="group rounded-3xl border border-emerald-100 bg-white/90 p-6 shadow-sm transition hover:-translate-y-1 hover:shadow-xl dark:border-emerald-900/40 dark:bg-slate-900/80">
       <div className={`h-2 rounded-full bg-gradient-to-r ${language.gradient}`} />
       <div className="mt-6 flex items-start justify-between gap-4">
         <div>
@@ -20,10 +20,10 @@ export function LanguageCard({ language }: { language: SignLanguage }) {
       <p className="mt-5 text-sm leading-6 text-slate-600 dark:text-slate-400">{language.description}</p>
       <p className="mt-4 text-sm text-slate-500 dark:text-slate-400">{language.region}</p>
       <div className="mt-6 flex gap-3">
-        <Link href={`/sign/${language.key}`} className="rounded-full bg-slate-950 px-4 py-2 text-sm font-black text-white transition group-hover:bg-indigo-600 dark:bg-white dark:text-slate-950">
+        <Link href={`/sign/${language.key}`} className="rounded-full bg-teal-700 px-4 py-2 text-sm font-black text-white transition group-hover:bg-teal-600 dark:bg-teal-500 dark:text-slate-950 dark:hover:bg-teal-400">
           View signs
         </Link>
-        <Link href={`/translate?language=${language.key}`} className="rounded-full border border-slate-200 px-4 py-2 text-sm font-black text-slate-700 transition hover:bg-slate-50 dark:border-slate-700 dark:text-slate-200 dark:hover:bg-slate-800">
+        <Link href={`/translate?language=${language.key}`} className="rounded-full border border-emerald-200 px-4 py-2 text-sm font-black text-slate-700 transition hover:bg-emerald-50 dark:border-emerald-800 dark:text-slate-200 dark:hover:bg-slate-800">
           Translate
         </Link>
       </div>

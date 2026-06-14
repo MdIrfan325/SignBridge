@@ -26,7 +26,7 @@ const posts = [
 
 export default function BlogPage() {
   return (
-    <section className="bg-slate-50 py-16 dark:bg-slate-900">
+    <section className="py-20">
       <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
         <SectionHeading
           eyebrow="Updates"
@@ -36,11 +36,11 @@ export default function BlogPage() {
 
         <div className="mt-12 grid gap-5 md:grid-cols-3">
           {posts.map((post) => (
-            <article key={post.title} className="rounded-[2rem] border border-slate-200 bg-white p-7 shadow-sm dark:border-slate-800 dark:bg-slate-950">
-              <p className="text-xs font-black uppercase tracking-wider text-indigo-600 dark:text-cyan-300">{post.date}</p>
+            <article key={post.title} className="rounded-[2rem] border border-emerald-100 bg-white/90 p-7 shadow-sm dark:border-emerald-900/40 dark:bg-slate-900/80">
+              <p className="text-xs font-black uppercase tracking-wider text-teal-700 dark:text-teal-300">{post.date}</p>
               <h2 className="mt-4 text-2xl font-black leading-tight text-slate-950 dark:text-white">{post.title}</h2>
               <p className="mt-4 text-sm leading-7 text-slate-600 dark:text-slate-400">{post.excerpt}</p>
-              <button className="mt-6 rounded-full border border-slate-200 px-4 py-2 text-sm font-black text-slate-700 transition hover:bg-slate-50 dark:border-slate-800 dark:text-slate-200 dark:hover:bg-slate-900">
+              <button className="mt-6 rounded-full border border-emerald-200 px-4 py-2 text-sm font-black text-slate-700 transition hover:bg-emerald-50 dark:border-emerald-800 dark:text-slate-200 dark:hover:bg-slate-800">
                 Read update
               </button>
             </article>

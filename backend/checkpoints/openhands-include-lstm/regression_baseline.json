@@ -1,0 +1,36 @@
+{
+  "timestamp": 1781401716.3205056,
+  "checkpoint": "/workspaces/SignBridge/backend/checkpoints/openhands-include-lstm/epoch=294-step=63719.ckpt",
+  "num_labels": 263,
+  "predictions": [
+    {
+      "label": "61.Father",
+      "confidence": 0.0041597518138587475,
+      "index": 207
+    },
+    {
+      "label": "22.loose",
+      "confidence": 0.004135737661272287,
+      "index": 57
+    },
+    {
+      "label": "41.Letter",
+      "confidence": 0.004128362983465195,
+      "index": 94
+    },
+    {
+      "label": "53.Goodevening",
+      "confidence": 0.004111174959689379,
+      "index": 135
+    },
+    {
+      "label": "81.Friend",
+      "confidence": 0.004110842477530241,
+      "index": 232
+    }
+  ],
+  "logits_mean": 0.0007141655078157783,
+  "logits_std": 0.04157087206840515,
+  "logits_min": -0.09922236949205399,
+  "logits_max": 0.09142932295799255
+}

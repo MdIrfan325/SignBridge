@@ -9,7 +9,7 @@ export const metadata: Metadata = {
 
 export default function TranslatePage() {
   return (
-    <Suspense fallback={<div className="bg-slate-50 py-16 dark:bg-slate-900" />}>
+    <Suspense fallback={<div className="py-20" />}>
       <TranslatorClient />
     </Suspense>
   );

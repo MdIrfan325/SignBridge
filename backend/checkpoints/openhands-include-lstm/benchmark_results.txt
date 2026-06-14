@@ -1,0 +1,20 @@
+OpenHands INCLUDE ISL - Benchmark Results
+======================================================================
+
+Performance Metrics
+----------------------------------------------------------------------
+Model load time:        2.869 seconds
+Checkpoint size:        18.78 MB
+Avg inference time:     3.80 ms
+Min/Max inference:      3.05 / 4.69 ms
+Average FPS:            262.9
+Peak memory usage:      404.7 MB
+CPU utilization:        0.0%
+
+Sample Inference Results
+----------------------------------------------------------------------
+1. 98.sick                                  0.0042
+2. 68.Family                                0.0042
+3. 59.Daughter                              0.0041
+4. 72.Wife                                  0.0041
+5. 89.Waiter                                0.0041

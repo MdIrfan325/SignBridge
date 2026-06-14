@@ -3,6 +3,7 @@
 import { useEffect, useRef, useState } from "react";
 import { useSearchParams } from "next/navigation";
 import { LANGUAGES, languageMap, type SignLanguageKey, type SignMode } from "@/lib/sign-data";
+import { SignRecognitionPanel } from "@/components/sign-recognition-panel";
 
 type OutputPrediction = {
   label: string;
@@ -23,6 +24,7 @@ export default function TranslatorClient() {
   const language = languageMap[initialLanguage] || languageMap.asl;
   const [selectedLanguage, setSelectedLanguage] = useState<SignLanguageKey>(language.key);
   const [mode, setMode] = useState<SignMode>("word");
+  const [recognitionMode, setRecognitionMode] = useState<"demo" | "ai">("demo");
   const [running, setRunning] = useState(false);
   const [permissionError, setPermissionError] = useState("");
   const [prediction, setPrediction] = useState<OutputPrediction | null>(null);
@@ -123,10 +125,10 @@ export default function TranslatorClient() {
   }, []);
 
   return (
-    <div className="bg-slate-50 py-12 dark:bg-slate-900">
+    <div className="py-20">
       <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
-        <div className="mb-8 max-w-3xl">
-          <p className="text-sm font-black uppercase tracking-[0.24em] text-indigo-600 dark:text-cyan-300">
+        <div className="sb-reveal mb-8 max-w-3xl">
+          <p className="text-sm font-black uppercase tracking-[0.24em] text-teal-700 dark:text-teal-300">
             Live translator
           </p>
           <h1 className="mt-3 text-4xl font-black tracking-tight text-slate-950 dark:text-white sm:text-5xl">
@@ -137,8 +139,57 @@ export default function TranslatorClient() {
           </p>
         </div>
 
-        <div className="grid gap-6 lg:grid-cols-[0.95fr_1.05fr]">
-          <section className="rounded-[2rem] border border-slate-200 bg-white p-4 shadow-sm dark:border-slate-800 dark:bg-slate-950">
+        {/* Mode Selector */}
+        <div className="mb-8 flex gap-3 sb-reveal">
+          <button
+            onClick={() => setRecognitionMode("demo")}
+            className={`px-4 py-2 rounded-full font-bold transition-all ${
+              recognitionMode === "demo"
+                ? "bg-teal-700 text-white"
+                : "border border-emerald-200 text-slate-700 hover:bg-emerald-50 dark:border-emerald-800 dark:text-slate-200 dark:hover:bg-slate-800"
+            }`}
+          >
+            Demo Mode
+          </button>
+          <button
+            onClick={() => setRecognitionMode("ai")}
+            className={`px-4 py-2 rounded-full font-bold transition-all ${
+              recognitionMode === "ai"
+                ? "bg-teal-700 text-white"
+                : "border border-emerald-200 text-slate-700 hover:bg-emerald-50 dark:border-emerald-800 dark:text-slate-200 dark:hover:bg-slate-800"
+            }`}
+          >
+            AI Recognition (AI4Bharat)
+          </button>
+        </div>
+
+        {/* AI Recognition Mode */}
+        {recognitionMode === "ai" ? (
+          <div className="sb-reveal sb-hover-lift" style={{ animationDelay: "80ms" }}>
+            <SignRecognitionPanel
+              language={selectedLanguage}
+              onRecognitionResult={(text, confidence) => {
+                const newPrediction: OutputPrediction = {
+                  label: text,
+                  type: mode,
+                  confidence: Math.round(confidence * 100),
+                  note: "AI4Bharat INCLUDE recognition",
+                };
+                setPrediction(newPrediction);
+                setHistory([
+                  {
+                    ...newPrediction,
+                    time: new Date().toLocaleTimeString([], { hour: "2-digit", minute: "2-digit" }),
+                  },
+                  ...history,
+                ].slice(0, 10));
+              }}
+            />
+          </div>
+        ) : (
+          /* Demo Mode */
+          <div className="grid gap-6 lg:grid-cols-[0.95fr_1.05fr]">
+          <section className="sb-reveal sb-hover-lift rounded-[2rem] border border-emerald-100 bg-white/90 p-4 shadow-sm dark:border-emerald-900/40 dark:bg-slate-900/80" style={{ animationDelay: "80ms" }}>
             <div className="aspect-video overflow-hidden rounded-[1.5rem] bg-slate-950">
               <video ref={videoRef} className="h-full w-full object-cover" autoPlay playsInline muted />
               {!running && (
@@ -154,10 +205,10 @@ export default function TranslatorClient() {
             </div>
 
             <div className="mt-4 grid gap-3 sm:grid-cols-2">
-              <button onClick={running ? stopCamera : startCamera} className="rounded-full bg-indigo-600 px-5 py-3 text-sm font-black text-white transition hover:bg-indigo-700">
+              <button onClick={running ? stopCamera : startCamera} className="rounded-full bg-teal-700 px-5 py-3 text-sm font-black text-white transition hover:bg-teal-600 dark:bg-teal-500 dark:text-slate-950 dark:hover:bg-teal-400">
                 {running ? "Stop camera" : "Start camera"}
               </button>
-              <button onClick={predictNext} disabled={!running} className="rounded-full border border-slate-200 px-5 py-3 text-sm font-black text-slate-700 transition hover:bg-slate-50 disabled:cursor-not-allowed disabled:opacity-50 dark:border-slate-800 dark:text-slate-200 dark:hover:bg-slate-900">
+              <button onClick={predictNext} disabled={!running} className="rounded-full border border-emerald-200 px-5 py-3 text-sm font-black text-slate-700 transition hover:bg-emerald-50 disabled:cursor-not-allowed disabled:opacity-50 dark:border-emerald-800 dark:text-slate-200 dark:hover:bg-slate-800">
                 Run demo detection
               </button>
             </div>
@@ -168,7 +219,7 @@ export default function TranslatorClient() {
               </p>
             )}
 
-            <div className="mt-5 rounded-3xl bg-slate-50 p-5 dark:bg-slate-900">
+            <div className="mt-5 rounded-3xl border border-emerald-100 bg-emerald-50/70 p-5 dark:border-emerald-900/40 dark:bg-slate-900">
               <p className="text-sm font-black uppercase tracking-[0.2em] text-slate-500 dark:text-slate-400">
                 Prototype status
               </p>
@@ -178,14 +229,14 @@ export default function TranslatorClient() {
             </div>
           </section>
 
-          <section className="rounded-[2rem] border border-slate-200 bg-white p-6 shadow-sm dark:border-slate-800 dark:bg-slate-950">
+          <section className="sb-reveal sb-hover-lift rounded-[2rem] border border-emerald-100 bg-white/90 p-6 shadow-sm dark:border-emerald-900/40 dark:bg-slate-900/80" style={{ animationDelay: "160ms" }}>
             <div className="grid gap-4 sm:grid-cols-2">
               <label className="block">
                 <span className="text-sm font-black text-slate-700 dark:text-slate-200">Language</span>
                 <select
                   value={selectedLanguage}
                   onChange={(event) => setSelectedLanguage(event.target.value as SignLanguageKey)}
-                  className="mt-2 w-full rounded-2xl border border-slate-200 bg-white px-4 py-3 text-sm font-bold text-slate-950 outline-none focus:ring-2 focus:ring-indigo-500 dark:border-slate-800 dark:bg-slate-900 dark:text-white"
+                  className="mt-2 w-full rounded-2xl border border-emerald-200 bg-white px-4 py-3 text-sm font-bold text-slate-950 outline-none focus:ring-2 focus:ring-teal-500 dark:border-emerald-900/40 dark:bg-slate-900 dark:text-white"
                 >
                   {languageOptions.map((key) => (
                     <option key={key} value={key}>
@@ -200,7 +251,7 @@ export default function TranslatorClient() {
                 <select
                   value={mode}
                   onChange={(event) => setMode(event.target.value as SignMode)}
-                  className="mt-2 w-full rounded-2xl border border-slate-200 bg-white px-4 py-3 text-sm font-bold text-slate-950 outline-none focus:ring-2 focus:ring-indigo-500 dark:border-slate-800 dark:bg-slate-900 dark:text-white"
+                  className="mt-2 w-full rounded-2xl border border-emerald-200 bg-white px-4 py-3 text-sm font-bold text-slate-950 outline-none focus:ring-2 focus:ring-teal-500 dark:border-emerald-900/40 dark:bg-slate-900 dark:text-white"
                 >
                   <option value="word">Words and phrases</option>
                   <option value="alphabet">Alphabet</option>
@@ -208,8 +259,8 @@ export default function TranslatorClient() {
               </label>
             </div>
 
-            <div className="mt-6 rounded-[1.5rem] border border-indigo-100 bg-indigo-50 p-6 dark:border-indigo-500/20 dark:bg-indigo-500/10">
-              <p className="text-sm font-black uppercase tracking-[0.2em] text-indigo-600 dark:text-cyan-300">
+            <div className="sb-breathe mt-6 rounded-[1.5rem] border border-teal-100 bg-teal-50/80 p-6 dark:border-teal-500/20 dark:bg-teal-500/10">
+              <p className="text-sm font-black uppercase tracking-[0.2em] text-teal-700 dark:text-teal-300">
                 Current prediction
               </p>
               <div className="mt-3 flex flex-wrap items-end justify-between gap-4">
@@ -223,7 +274,7 @@ export default function TranslatorClient() {
                 </div>
                 {prediction && (
                   <div className="text-right">
-                    <p className="text-3xl font-black text-indigo-600 dark:text-cyan-300">{prediction.confidence}%</p>
+                    <p className="text-3xl font-black text-teal-700 dark:text-teal-300">{prediction.confidence}%</p>
                     <p className="text-xs font-bold uppercase tracking-wider text-slate-500 dark:text-slate-400">confidence</p>
                   </div>
                 )}
@@ -231,18 +282,18 @@ export default function TranslatorClient() {
 
               {prediction && (
                 <div className="mt-5 h-3 overflow-hidden rounded-full bg-white/70 dark:bg-slate-900">
-                  <div className={`h-full rounded-full bg-gradient-to-r from-indigo-600 to-cyan-500`} style={{ width: `${prediction.confidence}%` }} />
+                  <div className={`h-full rounded-full bg-gradient-to-r from-teal-600 to-amber-400 transition-all duration-500 ease-out`} style={{ width: `${prediction.confidence}%` }} />
                 </div>
               )}
 
               <div className="mt-6 flex flex-wrap gap-3">
-                <button onClick={copyOutput} disabled={!prediction} className="rounded-full bg-slate-950 px-5 py-3 text-sm font-black text-white transition hover:bg-slate-700 disabled:cursor-not-allowed disabled:opacity-50 dark:bg-white dark:text-slate-950">
+                <button onClick={copyOutput} disabled={!prediction} className="rounded-full bg-teal-700 px-5 py-3 text-sm font-black text-white transition hover:bg-teal-600 disabled:cursor-not-allowed disabled:opacity-50 dark:bg-teal-500 dark:text-slate-950 dark:hover:bg-teal-400">
                   Copy text
                 </button>
-                <button onClick={speakOutput} disabled={!prediction} className="rounded-full border border-slate-200 px-5 py-3 text-sm font-black text-slate-700 transition hover:bg-slate-50 disabled:cursor-not-allowed disabled:opacity-50 dark:border-slate-800 dark:text-slate-200 dark:hover:bg-slate-900">
+                <button onClick={speakOutput} disabled={!prediction} className="rounded-full border border-emerald-200 px-5 py-3 text-sm font-black text-slate-700 transition hover:bg-emerald-50 disabled:cursor-not-allowed disabled:opacity-50 dark:border-emerald-800 dark:text-slate-200 dark:hover:bg-slate-800">
                   Speak
                 </button>
-                <button onClick={() => setHistory([])} disabled={history.length === 0} className="rounded-full border border-slate-200 px-5 py-3 text-sm font-black text-slate-700 transition hover:bg-slate-50 disabled:cursor-not-allowed disabled:opacity-50 dark:border-slate-800 dark:text-slate-200 dark:hover:bg-slate-900">
+                <button onClick={() => setHistory([])} disabled={history.length === 0} className="rounded-full border border-emerald-200 px-5 py-3 text-sm font-black text-slate-700 transition hover:bg-emerald-50 disabled:cursor-not-allowed disabled:opacity-50 dark:border-emerald-800 dark:text-slate-200 dark:hover:bg-slate-800">
                   Clear history
                 </button>
               </div>
@@ -255,12 +306,12 @@ export default function TranslatorClient() {
               </div>
               <div className="mt-4 grid gap-3">
                 {history.length === 0 ? (
-                  <p className="rounded-2xl border border-dashed border-slate-200 p-4 text-sm text-slate-500 dark:border-slate-800 dark:text-slate-400">
+                  <p className="rounded-2xl border border-dashed border-emerald-200 p-4 text-sm text-slate-500 dark:border-emerald-900/40 dark:text-slate-400">
                     No predictions yet.
                   </p>
                 ) : (
                   history.map((item, index) => (
-                    <div key={`${item.label}-${item.time}-${index}`} className="rounded-2xl border border-slate-200 p-4 dark:border-slate-800">
+                    <div key={`${item.label}-${item.time}-${index}`} className="sb-reveal sb-hover-lift rounded-2xl border border-emerald-100 bg-white/70 p-4 dark:border-emerald-900/40 dark:bg-slate-950/60" style={{ animationDelay: `${Math.min(index, 6) * 45}ms` }}>
                       <div className="flex items-center justify-between gap-3">
                         <div>
                           <p className="font-black text-slate-950 dark:text-white">{item.label}</p>
@@ -269,7 +320,7 @@ export default function TranslatorClient() {
                           </p>
                         </div>
                         <div className="text-right">
-                          <p className="text-sm font-black text-indigo-600 dark:text-cyan-300">{item.confidence}%</p>
+                          <p className="text-sm font-black text-teal-700 dark:text-teal-300">{item.confidence}%</p>
                           <p className="text-xs text-slate-500 dark:text-slate-400">{item.time}</p>
                         </div>
                       </div>
@@ -280,6 +331,7 @@ export default function TranslatorClient() {
             </div>
           </section>
         </div>
+        )}
       </div>
     </div>
   );

@@ -27,7 +27,7 @@ const values = [
 
 export default function AboutPage() {
   return (
-    <section className="bg-white py-16 dark:bg-slate-950">
+    <section className="py-20">
       <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
         <SectionHeading
           eyebrow="About"
@@ -36,7 +36,7 @@ export default function AboutPage() {
         />
 
         <div className="mt-12 grid gap-6 lg:grid-cols-[1.1fr_0.9fr]">
-          <div className="rounded-[2rem] border border-slate-200 bg-slate-50 p-8 dark:border-slate-800 dark:bg-slate-900">
+          <div className="rounded-[2rem] border border-emerald-100 bg-white/90 p-8 shadow-sm dark:border-emerald-900/40 dark:bg-slate-900/80">
             <h2 className="text-3xl font-black text-slate-950 dark:text-white">Mission</h2>
             <p className="mt-4 text-base leading-8 text-slate-600 dark:text-slate-400">
               The goal is to make sign-language technology easier to explore, extend, and adapt for different communities. The current build provides the product shell, language data, translator interface, and documentation pages needed to grow into a trained multilingual system.
@@ -46,7 +46,7 @@ export default function AboutPage() {
             </p>
           </div>
 
-          <div className="rounded-[2rem] border border-indigo-100 bg-indigo-50 p-8 dark:border-indigo-500/20 dark:bg-indigo-500/10">
+          <div className="rounded-[2rem] border border-teal-100 bg-teal-50/80 p-8 dark:border-teal-500/20 dark:bg-teal-500/10">
             <h2 className="text-2xl font-black text-slate-950 dark:text-white">Project principles</h2>
             <div className="mt-6 space-y-5">
               {values.map((value) => (

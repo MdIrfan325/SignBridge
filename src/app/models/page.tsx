@@ -32,7 +32,7 @@ const modelCards = [
 
 export default function ModelsPage() {
   return (
-    <section className="bg-slate-50 py-16 dark:bg-slate-900">
+    <section className="py-20">
       <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
         <SectionHeading
           eyebrow="Models"
@@ -42,10 +42,10 @@ export default function ModelsPage() {
 
         <div className="mt-12 grid gap-5 md:grid-cols-2">
           {modelCards.map((card) => (
-            <article key={card.title} className="rounded-[2rem] border border-slate-200 bg-white p-7 shadow-sm dark:border-slate-800 dark:bg-slate-950">
+            <article key={card.title} className="rounded-[2rem] border border-emerald-100 bg-white/90 p-7 shadow-sm dark:border-emerald-900/40 dark:bg-slate-900/80">
               <div className="flex items-start justify-between gap-4">
                 <h2 className="text-2xl font-black text-slate-950 dark:text-white">{card.title}</h2>
-                <span className="rounded-full bg-indigo-50 px-3 py-1 text-xs font-black text-indigo-700 dark:bg-indigo-500/10 dark:text-cyan-300">
+                <span className="rounded-full bg-teal-50 px-3 py-1 text-xs font-black text-teal-700 dark:bg-teal-500/10 dark:text-teal-300">
                   {card.status}
                 </span>
               </div>
@@ -54,11 +54,11 @@ export default function ModelsPage() {
           ))}
         </div>
 
-        <div className="mt-12 rounded-[2rem] border border-slate-200 bg-white p-8 dark:border-slate-800 dark:bg-slate-950">
+        <div className="mt-12 rounded-[2rem] border border-emerald-100 bg-white/90 p-8 shadow-sm dark:border-emerald-900/40 dark:bg-slate-900/80">
           <h2 className="text-2xl font-black text-slate-950 dark:text-white">Included language packs</h2>
           <div className="mt-6 grid gap-4 md:grid-cols-3">
             {LANGUAGES.map((language) => (
-              <div key={language.key} className="rounded-3xl bg-slate-50 p-5 dark:bg-slate-900">
+              <div key={language.key} className="rounded-3xl border border-emerald-100 bg-emerald-50/70 p-5 dark:border-emerald-900/40 dark:bg-slate-950/70">
                 <p className={`text-sm font-black ${language.key === "asl" ? "text-blue-600" : language.key === "wsl" ? "text-emerald-600" : "text-orange-600"}`}>
                   {language.shortName}
                 </p>
