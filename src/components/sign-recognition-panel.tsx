@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect, useRef, useState, memo, useCallback } from \"react\";
+import { useEffect, useRef, useState, memo, useCallback } from "react";
 import { useSignRecognition } from "@/hooks/useSignRecognition";
 import { useSignRecognitionDebug } from "@/hooks/useSignRecognitionDebug";
 import { getRecognitionRuntime, type RecognitionResult } from "@/lib/recognition-service";

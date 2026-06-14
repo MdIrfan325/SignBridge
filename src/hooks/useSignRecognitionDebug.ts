@@ -54,42 +54,61 @@ export function useSignRecognitionDebug(options: UseSignRecognitionDebugOptions 
   // Throttle inference to 100-150ms between requests
   const INFERENCE_THROTTLE_MS = 120;
 
-  useEffect(() => {
-    configRef.current = getDefaultConfig(language);
-    abortControllerRef.current?.abort();
+const onErrorRef = useRef(onError);
 
-    let mounted = true;
+useEffect(() => {
+  onErrorRef.current = onError;
+}, [onError]);
 
-    (async () => {
-      setState((prev) => ({
-        ...prev,
-        isInitialized: false,
-        isRecognizing: false,
-        error: null,
-        results: [],
-        confidence: 0,
-      }));
+useEffect(() => {
+  configRef.current = getDefaultConfig(language);
+  abortControllerRef.current?.abort();
 
-      try {
-        await initializeModel(language);
+  let mounted = true;
 
-        if (mounted) {
-          setState((prev) => ({ ...prev, isInitialized: true, error: null }));
-        }
-      } catch (error) {
-        const err = error instanceof Error ? error : new Error(String(error));
-        if (mounted) {
-          setState((prev) => ({ ...prev, error: err, isInitialized: false }));
-        }
-        onError?.(err);
+  (async () => {
+    try {
+      if (mounted) {
+        setState((prev) => ({
+          ...prev,
+          isInitialized: false,
+          isRecognizing: false,
+          error: null,
+          results: [],
+          confidence: 0,
+        }));
       }
-    })();
 
-    return () => {
-      mounted = false;
-      abortControllerRef.current?.abort();
-    };
-  }, [language, onError]);
+      await initializeModel(language);
+
+      if (mounted) {
+        setState((prev) => ({
+          ...prev,
+          isInitialized: true,
+          error: null,
+        }));
+      }
+    } catch (error) {
+      const err =
+        error instanceof Error ? error : new Error(String(error));
+
+      if (mounted) {
+        setState((prev) => ({
+          ...prev,
+          error: err,
+          isInitialized: false,
+        }));
+      }
+
+      onErrorRef.current?.(err);
+    }
+  })();
+
+  return () => {
+    mounted = false;
+    abortControllerRef.current?.abort();
+  };
+}, [language]);
 
   const canInferNow = useCallback(() => {
     const now = Date.now();
